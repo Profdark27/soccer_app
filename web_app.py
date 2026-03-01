@@ -5,10 +5,10 @@ import os
 import hashlib
 from PIL import Image
 
-
+# Configurazione Pagina
 st.set_page_config(page_title="Soccer Manager PRO Web", page_icon="⚽", layout="wide")
 
-#
+# --- FUNZIONE SICUREZZA ---
 def verifica_hash(password, salt, db_password):
     """Verifica se la password inserita corrisponde all'hash nel DB."""
     test_hash = hashlib.sha256((salt + password).encode()).hexdigest()
@@ -17,12 +17,12 @@ def verifica_hash(password, salt, db_password):
 def get_connection():
     return sqlite3.connect("societa_calcio.db", check_same_thread=False)
 
-# 
+# --- SESSION STATE PER LOGIN ---
 if 'autenticato' not in st.session_state:
     st.session_state['autenticato'] = False
     st.session_state['ruolo'] = None
 
-# 
+# --- SIDEBAR NAVIGAZIONE ---
 st.sidebar.title("⚽ Menu")
 menu = ["🏠 Home", "📋 Rosa", "🔥 Marcatori", "📅 Calendario", "🏆 Risultati", "🔐 Area Riservata"]
 scelta = st.sidebar.selectbox("Vai a:", menu)
@@ -112,4 +112,3 @@ elif scelta == "🔐 Area Riservata":
 
 st.sidebar.markdown("---")
 st.sidebar.write("v5.0 Security Edition")
-
