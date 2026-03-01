@@ -23,17 +23,55 @@ if 'autenticato' not in st.session_state:
     st.session_state['ruolo'] = None
 
 # --- SIDEBAR NAVIGAZIONE ---
+# --- SIDEBAR NAVIGAZIONE ---
 st.sidebar.title("⚽ Menu")
 menu = ["🏠 Home", "📋 Rosa", "🔥 Marcatori", "📅 Calendario", "🏆 Risultati", "🔐 Area Riservata"]
 scelta = st.sidebar.selectbox("Vai a:", menu)
 
 conn = get_connection()
 
-elif scelta == "🏠 Home":
+# --- LOGICA DELLE PAGINE ---
+if scelta == "🏠 Home":
     st.title("🏆 Soccer Manager Elite - Portale Web")
-    st.write("Benvenuto nel sistema di gestione ufficiale.")
-    # Nuovo link funzionante
-    st.image("https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000", use_container_width=True)
+    
+    # --- SEZIONE PROSSIMO MATCH (DINAMICO) ---
+    st.subheader("🔥 Il Prossimo Match")
+    try:
+        df_next = pd.read_sql("SELECT data, casa, fuori FROM partite WHERE risultato IN ('', '-') ORDER BY id LIMIT 1", conn)
+        if not df_next.empty:
+            with st.container(border=True):
+                col_a, col_vs, col_b = st.columns([2, 1, 2])
+                with col_a:
+                    st.markdown(f"<h3 style='text-align: center;'>{df_next['casa'].iloc[0]}</h3>", unsafe_allow_html=True)
+                with col_vs:
+                    st.markdown("<h3 style='text-align: center;'>VS</h3>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='text-align: center;'>{df_next['data'].iloc[0]}</p>", unsafe_allow_html=True)
+                with col_b:
+                    st.markdown(f"<h3 style='text-align: center;'>{df_next['fuori'].iloc[0]}</h3>", unsafe_allow_html=True)
+        else:
+            st.info("📅 Nessuna partita in programma al momento.")
+    except:
+        st.warning("Configura le partite per vedere il prossimo match.")
+
+    st.divider()
+
+    # --- SEZIONE ULTIME NEWS ---
+    st.subheader("📰 Ultime News")
+    col_n1, col_n2 = st.columns(2)
+    
+    with col_n1:
+        with st.container(border=True):
+            st.image("https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=500", use_container_width=True)
+            st.write("**Sessione di allenamento conclusa**")
+            st.caption("La squadra è pronta per la sfida. Tutti i convocati sono al top.")
+            
+    with col_n2:
+        with st.container(border=True):
+            st.image("https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=500", use_container_width=True)
+            st.write("**Aggiornamento Marcatori**")
+            st.caption("Controlla la classifica per vedere chi è il bomber della settimana!")
+
+
 
 elif scelta == "📋 Rosa":
     st.header("👥 Rosa Giocatori")
